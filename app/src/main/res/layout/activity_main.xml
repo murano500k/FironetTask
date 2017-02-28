@@ -19,30 +19,34 @@
         android:theme="@style/ThemeOverlay.AppCompat.ActionBar"
         app:popupTheme="@style/ThemeOverlay.AppCompat.Light"/>
 
-    <ProgressBar
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/progress"
-        android:layout_centerInParent="true"
-        android:visibility="gone"
-        android:indeterminate="true"/>
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_below="@id/toolbar"
         android:layout_height="wrap_content"
         android:visibility="gone"
+        android:orientation="horizontal"
         android:id="@+id/info_view">
-        <ImageView
+
+        <ProgressBar
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:id="@+id/progress"
+            android:visibility="gone"
+            android:indeterminate="true"/>
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_height="wrap_content"
             android:id="@+id/weather_info_image"
-            android:src="@android:drawable/sym_def_app_icon"/>
+            android:layout_margin="8dp"
+            android:src="@android:drawable/ic_dialog_alert"/>
         <TextView
             android:layout_width="wrap_content"
             android:id="@+id/weather_info_text"
             android:layout_height="wrap_content"
-            android:text="no data"
+            android:hint="Please search for city"
+            android:layout_margin="8dp"
             android:lines="4"/>
 
     </LinearLayout>
@@ -52,5 +56,7 @@
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
         mapbox:zoom="12"
-        android:layout_below="@id/info_view"/>
+        android:layout_below="@id/info_view">
+
+    </com.mapbox.mapboxsdk.maps.MapView>
 </RelativeLayout>
