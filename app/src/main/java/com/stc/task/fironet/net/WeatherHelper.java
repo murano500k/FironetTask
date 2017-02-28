@@ -30,20 +30,20 @@ public class WeatherHelper {
 				.build();
 	}
 	public WeatherData loadWeather(String city) {
-		Log.d(TAG, "loadFromWeb: ");
+		Log.d(TAG, "loadWeather: ");
 		WeatherApi service = retrofit.create(WeatherApi.class);
 		Call<WeatherData> getDataCall = service.getCityWeather(city, API_KEY);
 		Log.d(TAG, "url: " + getDataCall.request().url().toString());
 
 		try {
-			Log.d(TAG, "loadFromWeb: before start");
+			Log.d(TAG, "loadWeather: before start");
 			Response<WeatherData> responce = getDataCall.execute();
 			if (!responce.isSuccessful()) {
-				Log.e(TAG, "loadFromWeb errorBody: "+responce.errorBody().string());
+				Log.e(TAG, "loadWeather errorBody: "+responce.errorBody().string());
 				Log.e(TAG, "loadWeather message: "+responce.message() );
 				return null;
 			} else {
-				Log.d(TAG, "loadFromWeb: SUCCESS");
+				Log.d(TAG, "loadWeather: SUCCESS");
 				return responce.body();
 			}
 		} catch (IOException e) {

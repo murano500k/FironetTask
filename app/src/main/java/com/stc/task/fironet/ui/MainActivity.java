@@ -1,6 +1,5 @@
 package com.stc.task.fironet.ui;
 
-import android.app.Activity;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -9,11 +8,9 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.mapbox.mapboxsdk.MapboxAccountManager;
 import com.mapbox.mapboxsdk.annotations.MarkerViewOptions;
@@ -95,7 +92,6 @@ public class MainActivity extends AppCompatActivity implements WeatherContract.V
 	private void start() {
 		Log.d(TAG, "start: ");
 		if(mMap==null) {
-			updateProgress(true);
 			mapView.getMapAsync(new OnMapReadyCallback() {
 				@Override
 				public void onMapReady(MapboxMap mapboxMap) {
@@ -110,7 +106,6 @@ public class MainActivity extends AppCompatActivity implements WeatherContract.V
 			});
 			return;
 		}
-		updateProgress(true);
 		new WeatherPresenter(this);
 	}
 	@Override
@@ -131,11 +126,13 @@ public class MainActivity extends AppCompatActivity implements WeatherContract.V
 	@Override
 	public void showWeatherIcon(String url) {
 		Picasso.with(this).load(Uri.parse(url)).fit().into(weatherIcon);
+		updateProgress(false);
 	}
 
 	@Override
 	public void showWeatherData(String data) {
 		weatherDataText.setText(data+"");
+		updateProgress(false);
 	}
 
 	@Override
@@ -144,13 +141,14 @@ public class MainActivity extends AppCompatActivity implements WeatherContract.V
 		Log.e(TAG, msg );
 		showWeatherData(msg);
 		weatherIcon.setImageResource(android.R.drawable.ic_dialog_alert);
-		Toast.makeText(this, msg, Toast.LENGTH_SHORT).show();
+		updateProgress(false);
 	}
 
 	@Override
 	public void updateProgress(boolean visible) {
 		progress.setVisibility(visible ? View.VISIBLE : View.GONE);
-		infoLayout.setVisibility(visible ? View.GONE : View.VISIBLE);
+		weatherDataText.setVisibility(visible ? View.GONE : View.VISIBLE);
+		weatherIcon.setVisibility(visible ? View.GONE : View.VISIBLE);
 	}
 
 	@Override
@@ -197,8 +195,4 @@ public class MainActivity extends AppCompatActivity implements WeatherContract.V
 		return getString(R.string.weather_base_url);
 	}
 
-	public static void hideKeyboardFrom(Activity activity) {
-		InputMethodManager imm = (InputMethodManager) activity.getSystemService(Activity.INPUT_METHOD_SERVICE);
-		imm.hideSoftInputFromWindow(activity.getCurrentFocus().getWindowToken(), 0);
-	}
 }
