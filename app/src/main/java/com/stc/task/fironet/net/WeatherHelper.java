@@ -12,8 +12,6 @@ import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
-import static com.mapbox.mapboxsdk.constants.MapboxConstants.TAG;
-
 /**
  * Created by artem on 2/28/17.
  */
@@ -21,7 +19,7 @@ import static com.mapbox.mapboxsdk.constants.MapboxConstants.TAG;
 public class WeatherHelper {
 	private final String API_KEY;
 	private final Retrofit retrofit;
-
+	private static final String TAG = "WeatherHelper";
 	public WeatherHelper(String baseUrl, String api_key ) {
 		Log.d(TAG, "WeatherHelper: url="+baseUrl+" apikey="+api_key);
 		this.API_KEY=api_key;
@@ -41,7 +39,8 @@ public class WeatherHelper {
 			Log.d(TAG, "loadFromWeb: before start");
 			Response<WeatherData> responce = getDataCall.execute();
 			if (!responce.isSuccessful()) {
-				Log.e(TAG, "loadFromWeb: ERROR");
+				Log.e(TAG, "loadFromWeb errorBody: "+responce.errorBody().string());
+				Log.e(TAG, "loadWeather message: "+responce.message() );
 				return null;
 			} else {
 				Log.d(TAG, "loadFromWeb: SUCCESS");

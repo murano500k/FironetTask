@@ -81,7 +81,10 @@ public class MainActivity extends AppCompatActivity implements WeatherContract.V
 				return false;
 			}
 		});
-		Toolbar.LayoutParams layoutParams = new Toolbar.LayoutParams(Gravity.END);
+		Toolbar.LayoutParams layoutParams = new Toolbar.LayoutParams(
+				Toolbar.LayoutParams.WRAP_CONTENT,
+				Toolbar.LayoutParams.MATCH_PARENT,
+				Gravity.END);
 		toolbar.addView(searchView, layoutParams);
 		MapboxAccountManager.start(this, getString(R.string.map_access_token));
 		MapboxEventManager.getMapboxEventManager().initialize(this, getString(R.string.map_access_token));
@@ -137,9 +140,11 @@ public class MainActivity extends AppCompatActivity implements WeatherContract.V
 
 	@Override
 	public void showError(String msg) {
-		Log.e(TAG, "Error: "+msg );
+		msg="Error: "+msg;
+		Log.e(TAG, msg );
+		showWeatherData(msg);
+		weatherIcon.setImageResource(android.R.drawable.ic_dialog_alert);
 		Toast.makeText(this, msg, Toast.LENGTH_SHORT).show();
-
 	}
 
 	@Override

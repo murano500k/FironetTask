@@ -35,6 +35,7 @@ public class WeatherPresenter implements WeatherContract.Presenter {
 
 	@Override
 	public void citySelected(String city) {
+		Log.d(TAG, "citySelected: "+city);
 		view.updateProgress(true);
 		io.reactivex.Observable.fromCallable(new Callable<WeatherData>() {
 			@Override
@@ -86,9 +87,9 @@ public class WeatherPresenter implements WeatherContract.Presenter {
 
 	private String buildWeatherText(Main main, String name) {
 		String res="";
-		double temp=main.getTemp()-273.15;
-		double humidity=main.getHumidity();
-		double pressure=main.getPressure();
+		int temp=(int)main.getTemp()-273;
+		int humidity=(int)main.getHumidity();
+		int pressure=(int)main.getPressure();
 		res+="Weather in "+name;
 		res+="\ntemperature: "+temp+" C\n"+
 				"pressure: "+pressure+" Pa\n"+
