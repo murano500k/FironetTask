@@ -1,7 +1,13 @@
-package com.stc.task.fironet.ui;
+package com.stc.task.fironet.main;
 
+import android.Manifest;
+import android.content.SharedPreferences;
+import android.location.Location;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
@@ -11,7 +17,11 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.location.LocationServices;
 import com.mapbox.mapboxsdk.MapboxAccountManager;
 import com.mapbox.mapboxsdk.annotations.MarkerViewOptions;
 import com.mapbox.mapboxsdk.camera.CameraPosition;
@@ -25,9 +35,16 @@ import com.mikepenz.materialize.util.KeyboardUtil;
 import com.squareup.picasso.Picasso;
 import com.stc.task.fironet.R;
 
-public class MainActivity extends AppCompatActivity implements WeatherContract.View{
-	private static final String TAG = "MainActivity";
+import static android.content.pm.PackageManager.PERMISSION_GRANTED;
+import static com.stc.task.fironet.WeatherWidgetConfigureActivity.MY_WEATHER_PREFS;
+import static com.stc.task.fironet.WeatherWidgetConfigureActivity.QUERY_LAT;
+import static com.stc.task.fironet.WeatherWidgetConfigureActivity.QUERY_LON;
+
+public class MainActivity extends AppCompatActivity implements WeatherContract.View,
+		GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener{
+	public static final String TAG = "MainActivity";
 	SearchView searchView;
+
 	Toolbar toolbar;
 	private WeatherContract.Presenter presenter;
 	private MapboxMap mMap;
@@ -37,6 +54,10 @@ public class MainActivity extends AppCompatActivity implements WeatherContract.V
 	private ImageView weatherIcon;
 	private ProgressBar progress;
 	public static final float ZOOM_DEFAULT = 11;
+	private static final int REQUEST_LOCATION_PERMISSION = 4232;
+	private GoogleApiClient mGoogleApiClient;
+	private Location mLastLocation;
+
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -87,6 +108,12 @@ public class MainActivity extends AppCompatActivity implements WeatherContract.V
 		MapboxEventManager.getMapboxEventManager().initialize(this, getString(R.string.map_access_token));
 		MapboxEventManager.getMapboxEventManager().setTelemetryEnabled(true);
 		mapView.onCreate(savedInstanceState);
+		if (mGoogleApiClient == null) {
+			mGoogleApiClient = new GoogleApiClient.Builder(this)
+					.addConnectionCallbacks(this)
+					.addOnConnectionFailedListener(this)
+					.addApi(LocationServices.API).build();
+		}
 		start();
 	}
 	private void start() {
@@ -107,7 +134,9 @@ public class MainActivity extends AppCompatActivity implements WeatherContract.V
 			return;
 		}
 		new WeatherPresenter(this);
+		getLocation();
 	}
+
 	@Override
 	public void showSelectedCityOnMap(LatLng mapPoint,String t) {
 		MarkerViewOptions markerOpts=new MarkerViewOptions();
@@ -125,7 +154,7 @@ public class MainActivity extends AppCompatActivity implements WeatherContract.V
 
 	@Override
 	public void showWeatherIcon(String url) {
-		Picasso.with(this).load(Uri.parse(url)).fit().into(weatherIcon);
+		Picasso.with(this).load(Uri.parse(url)).into(weatherIcon);
 		updateProgress(false);
 	}
 
@@ -152,8 +181,69 @@ public class MainActivity extends AppCompatActivity implements WeatherContract.V
 	}
 
 	@Override
+	public void onRequestPermissionsResult(int requestCode, String[] permissions,
+	                                       int[] grantResults){
+		if(grantResults[0]==PERMISSION_GRANTED){
+			getLocation();
+		}else {
+			Toast.makeText(this, "NOT GRANTED", Toast.LENGTH_SHORT).show();
+		}
+	}
+
+	@Override
+	public String getWeatherApiKey() {
+		return getString(R.string.weather_api_key);
+	}
+
+	@Override
+	public String getWeatherBaseUrl() {
+		return getString(R.string.weather_base_url);
+	}
+	private void getLocation() {
+		if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PERMISSION_GRANTED &&
+				ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PERMISSION_GRANTED) {
+			ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, REQUEST_LOCATION_PERMISSION);
+			return;
+		}
+		mLastLocation = LocationServices.FusedLocationApi.getLastLocation(
+				mGoogleApiClient);
+		if (mLastLocation != null) {
+			Log.d(TAG, "getLatitude: "+mLastLocation.getLatitude());
+			Log.d(TAG, "getLongitude: "+mLastLocation.getLongitude());
+			saveLocation(mLastLocation);
+		}else {
+			showError("no location. please enable GPS" );
+		}
+	}
+
+	private void saveLocation(Location mLastLocation) {
+		String lat = String.valueOf(mLastLocation.getLatitude());
+		String lon = String.valueOf(mLastLocation.getLongitude());
+		SharedPreferences prefs=getSharedPreferences(MY_WEATHER_PREFS, MODE_PRIVATE);
+		prefs.edit().putString(QUERY_LAT, lat).putString(QUERY_LON, lon).apply();
+		presenter.locationSelected(lat, lon);
+	}
+
+
+	@Override
 	public void setPresenter(WeatherContract.Presenter p) {
 		this.presenter= p;
+	}
+
+	@Override
+	protected void onStart() {
+		mGoogleApiClient.connect();
+		super.onStart();
+
+	}
+
+	@Override
+	protected void onStop() {
+		if (mGoogleApiClient != null) {
+			mGoogleApiClient.disconnect();
+		}
+		super.onStop();
+
 	}
 	@Override
 	protected void onPause() {
@@ -184,15 +274,18 @@ public class MainActivity extends AppCompatActivity implements WeatherContract.V
 		mapView.onDestroy();
 		if(MapboxAccountManager.getInstance().isConnected()) MapboxAccountManager.getInstance().setConnected(false);
 	}
-
 	@Override
-	public String getWeatherApiKey() {
-		return getString(R.string.weather_api_key);
+	public void onConnected(@Nullable Bundle bundle) {
+		getLocation();
 	}
 
 	@Override
-	public String getWeatherBaseUrl() {
-		return getString(R.string.weather_base_url);
+	public void onConnectionSuspended(int i) {
+		Log.e(TAG, "onConnectionSuspended: "+i );
 	}
 
+	@Override
+	public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
+		Log.e(TAG, "onConnectionFailed: "+connectionResult.toString() );
+	}
 }

@@ -16,7 +16,7 @@
 
 package com.stc.task.fironet;
 
-import com.stc.task.fironet.ui.WeatherContract;
+import com.stc.task.fironet.main.WeatherContract;
 
 public interface BaseView<T> {
 

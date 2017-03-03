@@ -8,7 +8,7 @@
     android:id="@+id/activity_main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.stc.task.fironet.ui.MainActivity">
+    tools:context="com.stc.task.fironet.main.MainActivity">
 
     <android.support.v7.widget.Toolbar
         android:id="@+id/toolbar"

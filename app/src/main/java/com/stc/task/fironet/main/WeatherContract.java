@@ -1,4 +1,4 @@
-package com.stc.task.fironet.ui;
+package com.stc.task.fironet.main;
 
 import com.mapbox.mapboxsdk.geometry.LatLng;
 import com.stc.task.fironet.BasePresenter;
@@ -23,5 +23,6 @@ public interface WeatherContract {
 	interface Presenter extends BasePresenter {
 		void citySelected(String city);
 
+		void locationSelected(String lat, String lng);
 	}
 }

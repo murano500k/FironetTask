@@ -2,9 +2,14 @@ package com.stc.task.fironet.net;
 
 import android.util.Log;
 
+import com.stc.task.fironet.json.Main;
+import com.stc.task.fironet.json.Weather;
 import com.stc.task.fironet.json.WeatherData;
+import com.stc.task.fironet.json.WeatherDataForLocation;
 
 import java.io.IOException;
+import java.util.Date;
+import java.util.List;
 
 import okhttp3.OkHttpClient;
 import retrofit2.Call;
@@ -17,14 +22,14 @@ import retrofit2.converter.gson.GsonConverterFactory;
  */
 
 public class WeatherHelper {
-	private final String API_KEY;
+	public static final String WEATHER_BASE_URL = "http://api.openweathermap.org/";
+	public static final String API_KEY = "94b5cb3b2ef49b9c0bfe5e08ff7d2567";
+
 	private final Retrofit retrofit;
 	private static final String TAG = "WeatherHelper";
-	public WeatherHelper(String baseUrl, String api_key ) {
-		Log.d(TAG, "WeatherHelper: url="+baseUrl+" apikey="+api_key);
-		this.API_KEY=api_key;
+	public WeatherHelper() {
 		retrofit = new Retrofit.Builder()
-				.baseUrl(baseUrl)
+				.baseUrl(WEATHER_BASE_URL)
 				.client(new OkHttpClient())
 				.addConverterFactory(GsonConverterFactory.create())
 				.build();
@@ -49,6 +54,61 @@ public class WeatherHelper {
 		} catch (IOException e) {
 			Log.e(TAG, "IOException: ", e);
 			e.printStackTrace();
+		}
+		return null;
+	}
+
+	public WeatherDataForLocation loadWeather(String lat, String lon) {
+		Log.d(TAG, "loadWeather: ");
+		WeatherApi service = retrofit.create(WeatherApi.class);
+		Call<WeatherDataForLocation> getDataCall = service.getCityWeatherForLocation(lat, lon, API_KEY);
+		Log.d(TAG, "url: " + getDataCall.request().url().toString());
+
+		try {
+			Log.d(TAG, "loadWeather: before start");
+			Response<WeatherDataForLocation> responce = getDataCall.execute();
+			if (!responce.isSuccessful()) {
+				Log.e(TAG, "loadWeather errorBody: "+responce.errorBody().string());
+				Log.e(TAG, "loadWeather message: "+responce.message() );
+				return null;
+			} else {
+				Log.d(TAG, "loadWeather: SUCCESS");
+				return responce.body();
+			}
+		} catch (IOException e) {
+			Log.e(TAG, "IOException: ", e);
+			e.printStackTrace();
+		}
+		return null;
+	}
+
+	public String buildWeatherText(Main main, String name) {
+		long timestamp = System.currentTimeMillis();
+		String humanDate= new Date(timestamp).toString();
+		String res=humanDate+"\n";
+		int temp=(int)main.getTemp()-273;
+		int humidity=(int)main.getHumidity();
+		int pressure=(int)main.getPressure();
+		res+="Weather in "+name;
+		res+="\ntemperature: "+temp+" C\n"+
+				"pressure: "+pressure+" Pa\n"+
+				"humidity: "+humidity+" % ";
+		Log.d(TAG, "buildWeatherText: "+res);
+		return res;
+	}
+
+	public String getIconUrl(List<Weather> list) {
+		if (list == null || list.size() == 0) {
+			Log.e(TAG, "getIconUrl: null");
+		} else {
+			Weather weather = list.get(0);
+			if (weather == null) {
+				Log.e(TAG, "getIconUrl: null");
+				return null;
+			}
+			String res=WEATHER_BASE_URL + "img/w/" + weather.getIcon() + ".png";
+			Log.d(TAG, "getIconUrl: "+res);
+			return res;
 		}
 		return null;
 	}
