@@ -17,4 +17,3 @@ public interface WeatherApi {
 	@GET("data/2.5/weather")
 	Call<WeatherDataForLocation> getCityWeatherForLocation(@Query("lat") String lat, @Query("lon") String lon, @Query("APPID") String api_key);
 }
-//api.openweathermap.org/data/2.5/weather?lat=35&lon=139

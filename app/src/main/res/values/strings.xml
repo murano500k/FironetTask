@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">FironetTask</string>
+    <string name="app_name">WeatherApp</string>
     <string name="map_access_token">pk.eyJ1IjoibXVyYW5vNTAwayIsImEiOiJjaXluaGdpdmkwMDE3NDNxemtzcGM0aHUwIn0.2jC2GBu7ULr_cyt3YMvBlw</string>
     <string name="weather_api_key">94b5cb3b2ef49b9c0bfe5e08ff7d2567</string>
     <string name="weather_base_url">http://api.openweathermap.org/</string>

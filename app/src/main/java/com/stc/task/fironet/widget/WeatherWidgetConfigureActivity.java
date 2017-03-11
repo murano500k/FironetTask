@@ -1,4 +1,4 @@
-package com.stc.task.fironet;
+package com.stc.task.fironet.widget;
 
 import android.app.Activity;
 import android.app.job.JobInfo;
@@ -15,8 +15,8 @@ import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 
+import com.stc.task.fironet.R;
 import com.stc.task.fironet.main.MainActivity;
-import com.stc.task.fironet.service.WeatherJobService;
 
 /**
  * The configuration screen for the {@link WeatherAppWidget WeatherAppWidget} AppWidget.
@@ -31,6 +31,7 @@ public class WeatherWidgetConfigureActivity extends Activity {
 	public static final String CURRENT_WEATHER_TEXT = "CURRENT_WEATHER_TEXT";
 	public static final String CURRENT_WEATHER_ICON_URL = "CURRENT_WEATHER_ICON_URL";
 	public static final int REQUEST_GET_LOCATION = 618;
+	public static final String EXTRA_WIDGET_ID = "EXTRA_WIDGET_ID";
 	int mAppWidgetId = AppWidgetManager.INVALID_APPWIDGET_ID;
 	TextView textSelectedLocation;
 	FloatingActionButton fab;
@@ -91,6 +92,7 @@ public class WeatherWidgetConfigureActivity extends Activity {
 		public void onClick(View v) {
 			final Context context = WeatherWidgetConfigureActivity.this;
 			Intent i=new Intent(context, MainActivity.class);
+			i.setAction(MainActivity.ACTION_SELECT_LOCATION);
 			startActivityForResult(i, REQUEST_GET_LOCATION);
 		}
 	};
@@ -109,9 +111,11 @@ public class WeatherWidgetConfigureActivity extends Activity {
 
 	public static void cancelJob(Context context) {
 		JobScheduler tm = (JobScheduler) context.getSystemService(Context.JOB_SCHEDULER_SERVICE);
+
 		tm.cancel(WEATHER_JOB_ID);
 	}
-	public static void scheduleJob(Context context) {
+	static void scheduleJob(Context context,
+	                            int appWidgetId) {
 		ComponentName mServiceComponent = new ComponentName(context, WeatherJobService.class);
 		JobInfo.Builder builder = new JobInfo.Builder(WEATHER_JOB_ID, mServiceComponent);
 
@@ -124,31 +128,13 @@ public class WeatherWidgetConfigureActivity extends Activity {
 		PersistableBundle bundle = new PersistableBundle();
 		bundle.putString(QUERY_LAT, lat);
 		bundle.putString(QUERY_LON, lon);
+		bundle.putInt(EXTRA_WIDGET_ID, appWidgetId);
 		builder.setExtras(bundle);
-
 		Log.d(TAG, "Scheduling job");
 		JobScheduler tm = (JobScheduler) context.getSystemService(Context.JOB_SCHEDULER_SERVICE);
 		tm.schedule(builder.build());
 	}
 
-	static String loadWeatherTextPref(Context context, int appWidgetId) {
-		Log.d(TAG, "loadWeatherTextPref: for widget"+appWidgetId);
-		SharedPreferences prefs = context.getSharedPreferences(MY_WEATHER_PREFS, MODE_PRIVATE);
-		return prefs.getString(CURRENT_WEATHER_TEXT, null);
-	}
-	static String loadWeatherIconUrlPref(Context context, int appWidgetId) {
-		Log.d(TAG, "loadWeatherIconUrlPref: for widget"+appWidgetId);
-		SharedPreferences prefs = context.getSharedPreferences(MY_WEATHER_PREFS, MODE_PRIVATE);
-		return prefs.getString(CURRENT_WEATHER_ICON_URL, null);
-	}
-
-	static void deleteWeatherPrefData(Context context, int appWidgetId) {
-		SharedPreferences.Editor prefs = context.getSharedPreferences(MY_WEATHER_PREFS, MODE_PRIVATE).edit();
-		prefs.remove(CURRENT_WEATHER_ICON_URL);
-		prefs.remove(CURRENT_WEATHER_TEXT);
-		prefs.apply();
-
-	}
 
 
 

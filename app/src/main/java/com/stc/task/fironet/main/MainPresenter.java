@@ -19,16 +19,15 @@ import io.reactivex.schedulers.Schedulers;
  * Created by artem on 2/28/17.
  */
 
-public class WeatherPresenter implements WeatherContract.Presenter {
-	private static final String TAG = "WeatherPresenter";
-	WeatherContract.View view;
+public class MainPresenter implements MainContract.Presenter {
+	private static final String TAG = "MainPresenter";
+	MainContract.View view;
 	WeatherHelper weatherHelper;
-	public WeatherPresenter(WeatherContract.View view) {
+	public MainPresenter(MainContract.View view) {
 		this.view=view;
 		view.setPresenter(this);
 		view.updateProgress(false);
 		weatherHelper=new WeatherHelper();
-
 	}
 
 	@Override

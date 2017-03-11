@@ -7,5 +7,23 @@
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
     </style>
+    <style name="LargeRedFont">
+        <item name="android:textColor">#C80000</item>
+        <item name="android:textSize">40sp</item>
+    </style>
+    <style name="AppCustomTheme" parent="AppTheme">
+        <!-- These are your custom properties -->
+        <item name="android:buttonStyle">@style/Widget.Button.Custom</item>
+        <item name="android:textViewStyle">@style/Widget.TextView.Custom</item>
+    </style>
 
+    <!-- This is the custom button styles for this application -->
+    <style name="Widget.Button.Custom" parent="android:Widget.Button">
+        <item name="android:textColor">#0000FF</item>
+    </style>
+
+    <!-- This is the custom textview styles for this application -->
+    <style name="Widget.TextView.Custom" parent="android:Widget.TextView">
+        <item name="android:textColor">#00FF00</item>
+    </style>
 </resources>

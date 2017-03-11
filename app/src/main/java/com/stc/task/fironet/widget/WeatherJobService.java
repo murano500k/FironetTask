@@ -1,10 +1,17 @@
-package com.stc.task.fironet.service;
+package com.stc.task.fironet.widget;
 
 import android.app.job.JobParameters;
 import android.app.job.JobService;
-import android.content.SharedPreferences;
+import android.appwidget.AppWidgetManager;
+import android.graphics.Bitmap;
+import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.util.Log;
+import android.widget.RemoteViews;
 
+import com.squareup.picasso.Picasso;
+import com.squareup.picasso.Target;
+import com.stc.task.fironet.R;
 import com.stc.task.fironet.json.WeatherDataForLocation;
 import com.stc.task.fironet.net.WeatherHelper;
 
@@ -16,11 +23,9 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
 
-import static com.stc.task.fironet.WeatherWidgetConfigureActivity.CURRENT_WEATHER_ICON_URL;
-import static com.stc.task.fironet.WeatherWidgetConfigureActivity.CURRENT_WEATHER_TEXT;
-import static com.stc.task.fironet.WeatherWidgetConfigureActivity.MY_WEATHER_PREFS;
-import static com.stc.task.fironet.WeatherWidgetConfigureActivity.QUERY_LAT;
-import static com.stc.task.fironet.WeatherWidgetConfigureActivity.QUERY_LON;
+import static com.stc.task.fironet.widget.WeatherWidgetConfigureActivity.EXTRA_WIDGET_ID;
+import static com.stc.task.fironet.widget.WeatherWidgetConfigureActivity.QUERY_LAT;
+import static com.stc.task.fironet.widget.WeatherWidgetConfigureActivity.QUERY_LON;
 
 /**
  * Created by artem on 3/3/17.
@@ -33,6 +38,8 @@ public class WeatherJobService extends JobService {
 	public boolean onStartJob(JobParameters params) {
 		String lat = params.getExtras().getString(QUERY_LAT);
 		String lon = params.getExtras().getString(QUERY_LON);
+		int widgetId= params.getExtras().getInt(EXTRA_WIDGET_ID);
+
 		WeatherHelper weatherHelper=new WeatherHelper();
 		Observable.fromCallable(new Callable<WeatherDataForLocation>() {
 			@Override
@@ -52,7 +59,7 @@ public class WeatherJobService extends JobService {
 				String iconUrl = weatherHelper.getIconUrl(weatherDataForLocation.getWeather());
 				String city = weatherDataForLocation.getName();
 				String weatherText=weatherHelper.buildWeatherText(weatherDataForLocation.getMain(), city);
-				if(weatherText!=null && iconUrl!=null) saveWeatherData(weatherText, iconUrl);
+				if(weatherText!=null && iconUrl!=null) updateWidget(weatherText, iconUrl, widgetId);
 				else Log.e(TAG, "onNext: no data" );
 			}
 
@@ -71,13 +78,36 @@ public class WeatherJobService extends JobService {
 		return true;
 	}
 
-	private void saveWeatherData(String weatherText, String iconUrl) {
-		SharedPreferences prefs=getSharedPreferences(MY_WEATHER_PREFS, MODE_PRIVATE);
-		prefs.edit().putString(CURRENT_WEATHER_TEXT, weatherText)
-		.putString(CURRENT_WEATHER_ICON_URL, iconUrl)
-				.apply();
-		Log.d(TAG, "saveWeatherData: text = "+weatherText);
-		Log.d(TAG, "saveWeatherData: icon_url = "+iconUrl);
+	private void updateWidget(String weatherText, String iconUrl, int widgetId) {
+		Log.d(TAG, "updateWidget: text = "+weatherText);
+		Log.d(TAG, "updateWidget: icon_url = "+iconUrl);
+		AppWidgetManager awm=(AppWidgetManager)getSystemService(APPWIDGET_SERVICE);
+		RemoteViews views = new RemoteViews(getPackageName(), R.layout.new_app_widget);
+		if(iconUrl!=null){
+			Picasso.with(this).load(Uri.parse(iconUrl)).into(new Target() {
+				@Override
+				public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
+					Log.d(TAG, "onBitmapLoaded: ");
+					views.setImageViewBitmap(R.id.appwidget_image, bitmap);
+					views.setTextViewText(R.id.appwidget_text, weatherText!=null ? weatherText : getString(R.string.no_data));
+					awm.updateAppWidget(widgetId, views);
+					onStopJob(null);
+				}
+
+				@Override
+				public void onBitmapFailed(Drawable errorDrawable) {
+					Log.e(TAG, "onBitmapFailed: " );
+					views.setImageViewResource(R.id.appwidget_image, android.R.drawable.ic_dialog_alert);
+					views.setTextViewText(R.id.appwidget_text, weatherText!=null ? weatherText : getString(R.string.no_data));
+					awm.updateAppWidget(widgetId, views);
+				}
+
+				@Override
+				public void onPrepareLoad(Drawable placeHolderDrawable) {
+
+				}
+			});
+		}
 	}
 
 

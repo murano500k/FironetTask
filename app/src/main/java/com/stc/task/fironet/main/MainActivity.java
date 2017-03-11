@@ -11,6 +11,7 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
@@ -35,18 +36,20 @@ import com.mikepenz.materialize.util.KeyboardUtil;
 import com.squareup.picasso.Picasso;
 import com.stc.task.fironet.R;
 
-import static android.content.pm.PackageManager.PERMISSION_GRANTED;
-import static com.stc.task.fironet.WeatherWidgetConfigureActivity.MY_WEATHER_PREFS;
-import static com.stc.task.fironet.WeatherWidgetConfigureActivity.QUERY_LAT;
-import static com.stc.task.fironet.WeatherWidgetConfigureActivity.QUERY_LON;
 
-public class MainActivity extends AppCompatActivity implements WeatherContract.View,
+import static android.content.pm.PackageManager.PERMISSION_GRANTED;
+import static com.stc.task.fironet.widget.WeatherWidgetConfigureActivity.MY_WEATHER_PREFS;
+import static com.stc.task.fironet.widget.WeatherWidgetConfigureActivity.QUERY_LAT;
+import static com.stc.task.fironet.widget.WeatherWidgetConfigureActivity.QUERY_LON;
+
+public class MainActivity extends AppCompatActivity implements MainContract.View,
 		GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener{
 	public static final String TAG = "MainActivity";
+	public static final String ACTION_SELECT_LOCATION = "com.stc.task.fironet.ACTION_SELECT_LOCATION";
 	SearchView searchView;
 
 	Toolbar toolbar;
-	private WeatherContract.Presenter presenter;
+	private MainContract.Presenter presenter;
 	private MapboxMap mMap;
 	private MapView mapView;
 	private View infoLayout;
@@ -133,7 +136,7 @@ public class MainActivity extends AppCompatActivity implements WeatherContract.V
 			});
 			return;
 		}
-		new WeatherPresenter(this);
+		new MainPresenter(this);
 		getLocation();
 	}
 
@@ -183,7 +186,7 @@ public class MainActivity extends AppCompatActivity implements WeatherContract.V
 	@Override
 	public void onRequestPermissionsResult(int requestCode, String[] permissions,
 	                                       int[] grantResults){
-		if(grantResults[0]==PERMISSION_GRANTED){
+		if(grantResults!=null && grantResults.length!=0 && grantResults[0]==PERMISSION_GRANTED){
 			getLocation();
 		}else {
 			Toast.makeText(this, "NOT GRANTED", Toast.LENGTH_SHORT).show();
@@ -200,8 +203,7 @@ public class MainActivity extends AppCompatActivity implements WeatherContract.V
 		return getString(R.string.weather_base_url);
 	}
 	private void getLocation() {
-		if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PERMISSION_GRANTED &&
-				ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PERMISSION_GRANTED) {
+		if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PERMISSION_GRANTED) {
 			ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, REQUEST_LOCATION_PERMISSION);
 			return;
 		}
@@ -221,12 +223,23 @@ public class MainActivity extends AppCompatActivity implements WeatherContract.V
 		String lon = String.valueOf(mLastLocation.getLongitude());
 		SharedPreferences prefs=getSharedPreferences(MY_WEATHER_PREFS, MODE_PRIVATE);
 		prefs.edit().putString(QUERY_LAT, lat).putString(QUERY_LON, lon).apply();
-		presenter.locationSelected(lat, lon);
+		if(!isStartedByWidgetActivity())presenter.locationSelected(lat, lon);
+		else {
+			setResult(RESULT_OK);
+			finish();
+		}
+	}
+
+	private boolean isStartedByWidgetActivity() {
+		if(getIntent()!=null){
+			if(TextUtils.equals(getIntent().getAction(), ACTION_SELECT_LOCATION)) return true;
+		}
+		return false;
 	}
 
 
 	@Override
-	public void setPresenter(WeatherContract.Presenter p) {
+	public void setPresenter(MainContract.Presenter p) {
 		this.presenter= p;
 	}
 

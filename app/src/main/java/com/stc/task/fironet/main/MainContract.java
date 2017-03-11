@@ -8,7 +8,7 @@ import com.stc.task.fironet.BaseView;
  * Created by artem on 2/28/17.
  */
 
-public interface WeatherContract {
+public interface MainContract {
 	interface View extends BaseView {
 		void showSelectedCityOnMap(LatLng mapPoint, String cityName);
 

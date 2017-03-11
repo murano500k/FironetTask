@@ -16,13 +16,13 @@
 
 package com.stc.task.fironet;
 
-import com.stc.task.fironet.main.WeatherContract;
+import com.stc.task.fironet.main.MainContract;
 
 public interface BaseView<T> {
 
     void showError(String msg);
     void updateProgress(boolean visible);
 
-	void setPresenter(WeatherContract.Presenter p);
+	void setPresenter(MainContract.Presenter p);
 
 }

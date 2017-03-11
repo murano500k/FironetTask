@@ -12,12 +12,15 @@
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:supportsRtl="true"
-        android:theme="@style/AppTheme">
+        android:theme="@style/AppCustomTheme">
         <activity android:name=".main.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
 
                 <category android:name="android.intent.category.LAUNCHER"/>
+            </intent-filter>
+            <intent-filter>
+                <action android:name="com.stc.task.fironet.ACTION_SELECT_LOCATION"/>
             </intent-filter>
         </activity>
 
@@ -29,7 +32,7 @@
             android:value="@integer/google_play_services_version"/>
 
 
-        <receiver android:name=".WeatherAppWidget">
+        <receiver android:name=".widget.WeatherAppWidget">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE"/>
             </intent-filter>
@@ -39,14 +42,14 @@
                 android:resource="@xml/new_app_widget_info"/>
         </receiver>
 
-        <activity android:name=".WeatherWidgetConfigureActivity">
+        <activity android:name=".widget.WeatherWidgetConfigureActivity">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_CONFIGURE"/>
             </intent-filter>
         </activity>
 
         <service
-            android:name=".service.WeatherJobService"
+            android:name=".widget.WeatherJobService"
             android:permission="android.permission.BIND_JOB_SERVICE"
             android:exported="true"/>
 
