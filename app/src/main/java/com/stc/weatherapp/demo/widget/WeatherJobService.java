@@ -1,4 +1,4 @@
-package com.stc.task.fironet.widget;
+package com.stc.weatherapp.demo.widget;
 
 import android.app.job.JobParameters;
 import android.app.job.JobService;
@@ -11,9 +11,9 @@ import android.widget.RemoteViews;
 
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Target;
-import com.stc.task.fironet.R;
-import com.stc.task.fironet.json.WeatherDataForLocation;
-import com.stc.task.fironet.net.WeatherHelper;
+import com.stc.weatherapp.demo.R;
+import com.stc.weatherapp.demo.json.WeatherDataForLocation;
+import com.stc.weatherapp.demo.net.WeatherHelper;
 
 import java.util.concurrent.Callable;
 
@@ -23,9 +23,9 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
 
-import static com.stc.task.fironet.widget.WeatherWidgetConfigureActivity.EXTRA_WIDGET_ID;
-import static com.stc.task.fironet.widget.WeatherWidgetConfigureActivity.QUERY_LAT;
-import static com.stc.task.fironet.widget.WeatherWidgetConfigureActivity.QUERY_LON;
+import static com.stc.weatherapp.demo.widget.WeatherWidgetConfigureActivity.EXTRA_WIDGET_ID;
+import static com.stc.weatherapp.demo.widget.WeatherWidgetConfigureActivity.QUERY_LAT;
+import static com.stc.weatherapp.demo.widget.WeatherWidgetConfigureActivity.QUERY_LON;
 
 /**
  * Created by artem on 3/3/17.

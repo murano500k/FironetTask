@@ -1,12 +1,12 @@
-package com.stc.task.fironet.main;
+package com.stc.weatherapp.demo.main;
 
 import android.util.Log;
 
 import com.mapbox.mapboxsdk.geometry.LatLng;
-import com.stc.task.fironet.json.Coord;
-import com.stc.task.fironet.json.WeatherData;
-import com.stc.task.fironet.json.WeatherDataForLocation;
-import com.stc.task.fironet.net.WeatherHelper;
+import com.stc.weatherapp.demo.json.Coord;
+import com.stc.weatherapp.demo.json.WeatherData;
+import com.stc.weatherapp.demo.json.WeatherDataForLocation;
+import com.stc.weatherapp.demo.net.WeatherHelper;
 
 import java.util.concurrent.Callable;
 
