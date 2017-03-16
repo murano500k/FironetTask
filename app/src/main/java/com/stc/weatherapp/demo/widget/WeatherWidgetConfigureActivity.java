@@ -1,4 +1,4 @@
-package com.stc.task.fironet.widget;
+package com.stc.weatherapp.demo.widget;
 
 import android.app.Activity;
 import android.app.job.JobInfo;
@@ -15,8 +15,8 @@ import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 
-import com.stc.task.fironet.R;
-import com.stc.task.fironet.main.MainActivity;
+import com.stc.weatherapp.demo.R;
+import com.stc.weatherapp.demo.main.MainActivity;
 
 /**
  * The configuration screen for the {@link WeatherAppWidget WeatherAppWidget} AppWidget.

@@ -1,4 +1,4 @@
-package com.stc.task.fironet.widget;
+package com.stc.weatherapp.demo.widget;
 
 import android.appwidget.AppWidgetManager;
 import android.appwidget.AppWidgetProvider;

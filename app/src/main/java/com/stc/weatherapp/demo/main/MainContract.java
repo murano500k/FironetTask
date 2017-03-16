@@ -1,8 +1,8 @@
-package com.stc.task.fironet.main;
+package com.stc.weatherapp.demo.main;
 
 import com.mapbox.mapboxsdk.geometry.LatLng;
-import com.stc.task.fironet.BasePresenter;
-import com.stc.task.fironet.BaseView;
+import com.stc.weatherapp.demo.BasePresenter;
+import com.stc.weatherapp.demo.BaseView;
 
 /**
  * Created by artem on 2/28/17.

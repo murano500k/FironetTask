@@ -1,5 +1,5 @@
 
-package com.stc.task.fironet.json;
+package com.stc.weatherapp.demo.json;
 
 import java.util.List;
 import com.google.gson.annotations.Expose;

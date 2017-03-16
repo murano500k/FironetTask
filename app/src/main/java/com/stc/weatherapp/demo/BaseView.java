@@ -14,9 +14,15 @@
  * limitations under the License.
  */
 
-package com.stc.task.fironet;
+package com.stc.weatherapp.demo;
 
-public interface BasePresenter {
+import com.stc.weatherapp.demo.main.MainContract;
 
-    void cancel();
+public interface BaseView<T> {
+
+    void showError(String msg);
+    void updateProgress(boolean visible);
+
+	void setPresenter(MainContract.Presenter p);
+
 }

@@ -1,4 +1,4 @@
-package com.stc.task.fironet.main;
+package com.stc.weatherapp.demo.main;
 
 import android.Manifest;
 import android.content.SharedPreferences;
@@ -18,7 +18,6 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -34,18 +33,17 @@ import com.mapbox.mapboxsdk.maps.OnMapReadyCallback;
 import com.mapbox.mapboxsdk.telemetry.MapboxEventManager;
 import com.mikepenz.materialize.util.KeyboardUtil;
 import com.squareup.picasso.Picasso;
-import com.stc.task.fironet.R;
-
+import com.stc.weatherapp.demo.R;
 
 import static android.content.pm.PackageManager.PERMISSION_GRANTED;
-import static com.stc.task.fironet.widget.WeatherWidgetConfigureActivity.MY_WEATHER_PREFS;
-import static com.stc.task.fironet.widget.WeatherWidgetConfigureActivity.QUERY_LAT;
-import static com.stc.task.fironet.widget.WeatherWidgetConfigureActivity.QUERY_LON;
+import static com.stc.weatherapp.demo.widget.WeatherWidgetConfigureActivity.MY_WEATHER_PREFS;
+import static com.stc.weatherapp.demo.widget.WeatherWidgetConfigureActivity.QUERY_LAT;
+import static com.stc.weatherapp.demo.widget.WeatherWidgetConfigureActivity.QUERY_LON;
 
 public class MainActivity extends AppCompatActivity implements MainContract.View,
 		GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener{
 	public static final String TAG = "MainActivity";
-	public static final String ACTION_SELECT_LOCATION = "com.stc.task.fironet.ACTION_SELECT_LOCATION";
+	public static final String ACTION_SELECT_LOCATION = "com.stc.weatherapp.demo.ACTION_SELECT_LOCATION";
 	SearchView searchView;
 
 	Toolbar toolbar;
@@ -74,6 +72,7 @@ public class MainActivity extends AppCompatActivity implements MainContract.View
 		progress=(ProgressBar)findViewById(R.id.progress);
 		setSupportActionBar(toolbar);
 		setTitle("");
+
 		searchView=new SearchView(this);
 		searchView.setIconified(true);
 		searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
@@ -110,13 +109,14 @@ public class MainActivity extends AppCompatActivity implements MainContract.View
 		MapboxAccountManager.start(this, getString(R.string.map_access_token));
 		MapboxEventManager.getMapboxEventManager().initialize(this, getString(R.string.map_access_token));
 		MapboxEventManager.getMapboxEventManager().setTelemetryEnabled(true);
-		mapView.onCreate(savedInstanceState);
 		if (mGoogleApiClient == null) {
 			mGoogleApiClient = new GoogleApiClient.Builder(this)
 					.addConnectionCallbacks(this)
 					.addOnConnectionFailedListener(this)
 					.addApi(LocationServices.API).build();
 		}
+		mapView.onCreate(savedInstanceState);
+
 		start();
 	}
 	private void start() {
@@ -137,7 +137,6 @@ public class MainActivity extends AppCompatActivity implements MainContract.View
 			return;
 		}
 		new MainPresenter(this);
-		getLocation();
 	}
 
 	@Override
@@ -186,10 +185,8 @@ public class MainActivity extends AppCompatActivity implements MainContract.View
 	@Override
 	public void onRequestPermissionsResult(int requestCode, String[] permissions,
 	                                       int[] grantResults){
-		if(grantResults!=null && grantResults.length!=0 && grantResults[0]==PERMISSION_GRANTED){
+		if( grantResults.length!=0 && grantResults[0]==PERMISSION_GRANTED){
 			getLocation();
-		}else {
-			Toast.makeText(this, "NOT GRANTED", Toast.LENGTH_SHORT).show();
 		}
 	}
 
@@ -228,6 +225,7 @@ public class MainActivity extends AppCompatActivity implements MainContract.View
 			setResult(RESULT_OK);
 			finish();
 		}
+
 	}
 
 	private boolean isStartedByWidgetActivity() {
@@ -241,6 +239,7 @@ public class MainActivity extends AppCompatActivity implements MainContract.View
 	@Override
 	public void setPresenter(MainContract.Presenter p) {
 		this.presenter= p;
+		getLocation();
 	}
 
 	@Override

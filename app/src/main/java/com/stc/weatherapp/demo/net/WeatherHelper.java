@@ -1,11 +1,11 @@
-package com.stc.task.fironet.net;
+package com.stc.weatherapp.demo.net;
 
 import android.util.Log;
 
-import com.stc.task.fironet.json.Main;
-import com.stc.task.fironet.json.Weather;
-import com.stc.task.fironet.json.WeatherData;
-import com.stc.task.fironet.json.WeatherDataForLocation;
+import com.stc.weatherapp.demo.json.Main;
+import com.stc.weatherapp.demo.json.Weather;
+import com.stc.weatherapp.demo.json.WeatherData;
+import com.stc.weatherapp.demo.json.WeatherDataForLocation;
 
 import java.io.IOException;
 import java.util.Date;

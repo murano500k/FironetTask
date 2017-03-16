@@ -1,7 +1,7 @@
-package com.stc.task.fironet.net;
+package com.stc.weatherapp.demo.net;
 
-import com.stc.task.fironet.json.WeatherData;
-import com.stc.task.fironet.json.WeatherDataForLocation;
+import com.stc.weatherapp.demo.json.WeatherData;
+import com.stc.weatherapp.demo.json.WeatherDataForLocation;
 
 import retrofit2.Call;
 import retrofit2.http.GET;
