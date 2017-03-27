@@ -1,5 +1,7 @@
 # WeatherApp
-Simple OpenWeatherMap clicent. Shows selected city weather and location on map. User can add weather widget to home screen. 
+Simple OpenWeatherMap client. Shows selected city weather and location on map. User can add weather widget to home screen. 
+https://play.google.com/store/apps/details?id=com.stc.cv
+
 #### Used tools
 - Retrofit2
 - Gson
